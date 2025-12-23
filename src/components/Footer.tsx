@@ -30,7 +30,7 @@ const Footer = () => {
               <SiTiktok size={20} />
             </a>
             <a
-              href="mailto:rakele@rakelemenjivar.com"
+              href="mailto:booking@rakelemenjivar.com"
               className="text-muted-foreground hover:text-primary transition-colors duration-300"
               aria-label="Email"
             >
