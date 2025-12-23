@@ -28,7 +28,7 @@ const Contact = () => {
     e.preventDefault();
     
     const { name, email, company, message } = formData;
-    const recipient = "rakele@rakelemenjivar.com";
+    const recipient = "booking@rakelemenjivar.com";
     const subject = encodeURIComponent(`Inquiry from ${name}${company ? ` - ${company}` : ""}`);
     const body = encodeURIComponent(
       `Name: ${name}\nEmail: ${email}\nCompany: ${company || "N/A"}\n\nMessage:\n${message}`
@@ -75,10 +75,10 @@ const Contact = () => {
                       EMAIL
                     </p>
                     <a
-                      href="mailto:rakele@rakelemenjivar.com"
+                      href="mailto:booking@rakelemenjivar.com"
                       className="font-sans text-foreground hover:text-primary transition-colors duration-300"
                     >
-                      rakele@rakelemenjivar.com
+                      booking@rakelemenjivar.com
                     </a>
                   </div>
                 </div>
