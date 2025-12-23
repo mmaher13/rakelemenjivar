@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useProtectedEmail } from "@/hooks/useProtectedEmail";
 import { Mail, MapPin, Instagram } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
 
 const Contact = () => {
   const { toast } = useToast();
+  const { full: email, mailto } = useProtectedEmail();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,15 +29,14 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const { name, email, company, message } = formData;
-    const recipient = "booking@rakelemenjivar.com";
+    const { name, email: userEmail, company, message } = formData;
     const subject = encodeURIComponent(`Inquiry from ${name}${company ? ` - ${company}` : ""}`);
     const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nCompany: ${company || "N/A"}\n\nMessage:\n${message}`
+      `Name: ${name}\nEmail: ${userEmail}\nCompany: ${company || "N/A"}\n\nMessage:\n${message}`
     );
     
-    // Open mailto link
-    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+    // Open mailto link using protected email
+    window.location.href = `${mailto}?subject=${subject}&body=${body}`;
     
     toast({
       title: "Opening Email Client",
@@ -75,10 +76,10 @@ const Contact = () => {
                       EMAIL
                     </p>
                     <a
-                      href="mailto:booking@rakelemenjivar.com"
+                      href={mailto}
                       className="font-sans text-foreground hover:text-primary transition-colors duration-300"
                     >
-                      booking@rakelemenjivar.com
+                      {email}
                     </a>
                   </div>
                 </div>

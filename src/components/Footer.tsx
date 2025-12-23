@@ -1,7 +1,10 @@
 import { Instagram, Mail } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
+import { useProtectedEmail } from "@/hooks/useProtectedEmail";
 
 const Footer = () => {
+  const { mailto } = useProtectedEmail();
+  
   return (
     <footer className="bg-charcoal border-t border-border py-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -30,7 +33,7 @@ const Footer = () => {
               <SiTiktok size={20} />
             </a>
             <a
-              href="mailto:booking@rakelemenjivar.com"
+              href={mailto}
               className="text-muted-foreground hover:text-primary transition-colors duration-300"
               aria-label="Email"
             >
