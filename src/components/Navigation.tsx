@@ -34,9 +34,9 @@ const Navigation = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="font-serif text-xl md:text-2xl tracking-wider text-foreground hover:text-primary transition-colors duration-300"
+            className="font-logo text-2xl md:text-3xl tracking-wider text-foreground hover:text-primary transition-colors duration-300"
           >
-            RAKELE MENJIVAR
+            Rakele Menjivar
           </Link>
 
           {/* Desktop Navigation */}
