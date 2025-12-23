@@ -4,13 +4,42 @@ import portfolio1 from "@/assets/portfolio-1.jpg";
 import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
 import portfolio4 from "@/assets/portfolio-4.jpg";
+import portfolio5 from "@/assets/portfolio-5.jpg";
+import portfolio6 from "@/assets/portfolio-6.jpg";
+import portfolio7 from "@/assets/portfolio-7.jpg";
+import portfolio8 from "@/assets/portfolio-8.jpg";
+import portfolio9 from "@/assets/portfolio-9.jpg";
+import portfolio10 from "@/assets/portfolio-10.jpg";
+import portfolio11 from "@/assets/portfolio-11.jpg";
+import portfolio12 from "@/assets/portfolio-12.jpg";
+import portfolio13 from "@/assets/portfolio-13.jpg";
 
 const Portfolio = () => {
   const portfolioImages = [
-    { src: portfolio1, alt: "Editorial Fashion Shoot", category: "Editorial" },
-    { src: portfolio2, alt: "High Fashion Portrait", category: "Fashion" },
+    { src: portfolio1, alt: "Editorial Portrait", category: "Editorial" },
+    { src: portfolio2, alt: "Fashion Editorial", category: "Fashion" },
     { src: portfolio3, alt: "Beauty Campaign", category: "Beauty" },
-    { src: portfolio4, alt: "Runway Style", category: "Runway" },
+    { src: portfolio4, alt: "High Fashion", category: "Fashion" },
+    { src: portfolio5, alt: "Studio Portrait", category: "Portrait" },
+    { src: portfolio6, alt: "Runway Look", category: "Runway" },
+    { src: portfolio7, alt: "Commercial", category: "Commercial" },
+    { src: portfolio8, alt: "Editorial", category: "Editorial" },
+    { src: portfolio9, alt: "Fashion Shoot", category: "Fashion" },
+    { src: portfolio10, alt: "Beauty Portrait", category: "Beauty" },
+    { src: portfolio11, alt: "Lifestyle", category: "Lifestyle" },
+    { src: portfolio12, alt: "Editorial Fashion", category: "Editorial" },
+    { src: portfolio13, alt: "High Fashion Portrait", category: "Fashion" },
+  ];
+
+  const measurements = [
+    { label: "Height", value: "1.70 m" },
+    { label: "Bust", value: "90 cm (32A)" },
+    { label: "Waist", value: "60 cm" },
+    { label: "Hips", value: "92 cm" },
+    { label: "Dress Size", value: "0 (US)" },
+    { label: "Shoe Size", value: "7 US / 38 EU" },
+    { label: "Eyes", value: "Brown" },
+    { label: "Hair", value: "Black" },
   ];
 
   return (
@@ -33,17 +62,39 @@ const Portfolio = () => {
         </div>
       </section>
 
+      {/* Measurements Bar */}
+      <section className="py-8 border-t border-b border-border mb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+            {measurements.map((item, index) => (
+              <div
+                key={item.label}
+                className="text-center opacity-0 animate-fade-up"
+                style={{ animationDelay: `${0.3 + index * 0.05}s` }}
+              >
+                <p className="font-serif text-lg md:text-xl text-foreground">
+                  {item.value}
+                </p>
+                <p className="font-sans text-xs letter-spacing-wide text-muted-foreground uppercase">
+                  {item.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Portfolio Grid */}
       <section className="py-12 pb-24">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {portfolioImages.map((image, index) => (
               <div
                 key={index}
                 className="group relative overflow-hidden opacity-0 animate-fade-up hover-lift"
-                style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+                style={{ animationDelay: `${0.3 + index * 0.05}s` }}
               >
-                <div className="aspect-[4/5] overflow-hidden">
+                <div className="aspect-[3/4] overflow-hidden">
                   <img
                     src={image.src}
                     alt={image.alt}
