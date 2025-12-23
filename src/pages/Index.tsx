@@ -7,10 +7,10 @@ import heroImage from "@/assets/hero-main.jpg";
 
 const Index = () => {
   const stats = [
-    { value: "5'9\"", label: "Height" },
-    { value: "32", label: "Bust" },
-    { value: "24", label: "Waist" },
-    { value: "34", label: "Hips" },
+    { value: "1.70m", label: "Height" },
+    { value: "90cm", label: "Bust" },
+    { value: "60cm", label: "Waist" },
+    { value: "92cm", label: "Hips" },
   ];
 
   return (
