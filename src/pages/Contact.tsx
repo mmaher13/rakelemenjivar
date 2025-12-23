@@ -15,7 +15,7 @@ const Contact = () => {
     company: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -23,20 +23,23 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+    
+    const { name, email, company, message } = formData;
+    const recipient = "rakele@rakelemenjivar.com";
+    const subject = encodeURIComponent(`Inquiry from ${name}${company ? ` - ${company}` : ""}`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\nCompany: ${company || "N/A"}\n\nMessage:\n${message}`
+    );
+    
+    // Open mailto link
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+    
     toast({
-      title: "Message Sent",
-      description: "Thank you for reaching out. I'll get back to you soon.",
+      title: "Opening Email Client",
+      description: "Your email client will open with the message pre-filled.",
     });
-
-    setFormData({ name: "", email: "", company: "", message: "" });
-    setIsSubmitting(false);
   };
 
   return (
@@ -71,10 +74,10 @@ const Contact = () => {
                       EMAIL
                     </p>
                     <a
-                      href="mailto:contact@rakelemenjivar.com"
+                      href="mailto:rakele@rakelemenjivar.com"
                       className="font-sans text-foreground hover:text-primary transition-colors duration-300"
                     >
-                      contact@rakelemenjivar.com
+                      rakele@rakelemenjivar.com
                     </a>
                   </div>
                 </div>
@@ -190,9 +193,8 @@ const Contact = () => {
                   variant="hero"
                   size="lg"
                   className="w-full"
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  Send Message
                 </Button>
               </form>
             </div>
