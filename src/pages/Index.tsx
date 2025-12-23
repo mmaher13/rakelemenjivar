@@ -6,13 +6,6 @@ import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-main.jpg";
 
 const Index = () => {
-  const stats = [
-    { value: "1.70m", label: "Height" },
-    { value: "90cm", label: "Bust" },
-    { value: "60cm", label: "Waist" },
-    { value: "92cm", label: "Hips" },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -66,28 +59,6 @@ const Index = () => {
               SCROLL
             </span>
             <div className="w-px h-10 bg-gradient-to-b from-primary to-transparent" />
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 border-t border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className="text-center opacity-0 animate-fade-up"
-                style={{ animationDelay: `${0.6 + index * 0.1}s` }}
-              >
-                <p className="font-serif text-4xl md:text-5xl text-foreground mb-2">
-                  {stat.value}
-                </p>
-                <p className="font-sans text-xs letter-spacing-wide text-muted-foreground uppercase">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
