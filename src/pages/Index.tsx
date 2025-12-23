@@ -35,8 +35,8 @@ const Index = () => {
               <span className="text-foreground">Menjivar</span>
             </h1>
             <p className="font-sans text-sm md:text-base text-muted-foreground max-w-md mb-8 opacity-0 animate-fade-up delay-200 leading-relaxed">
-              Bringing elegance and versatility to every frame. Available for
-              editorial, commercial, and runway collaborations worldwide.
+              Professional fashion model from El Salvador bringing elegance and versatility to every frame. Available for
+              editorial, commercial, runway, and brand collaborations worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-up delay-300">
               <Button variant="hero" size="lg" asChild>
@@ -75,15 +75,15 @@ const Index = () => {
                 Where Passion Meets Profession
               </h2>
               <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                Based in Los Angeles with international reach, I bring years of
+                As a professional international fashion model from El Salvador, I bring years of
                 experience across diverse modeling categories. From high fashion
-                editorials to commercial campaigns, my versatility and
-                professionalism ensure every project exceeds expectations.
+                editorials to commercial campaigns, luxury brand ambassadorships to runway shows,
+                my versatility and professionalism ensure every project exceeds expectations.
               </p>
               <p className="font-sans text-muted-foreground leading-relaxed mb-8">
                 I believe in collaborative artistry—working closely with
-                photographers, creative directors, and brands to bring unique
-                visions to life.
+                photographers, creative directors, and brands worldwide to bring unique
+                visions to life. Available for bookings in Latin America, North America, Europe, and internationally.
               </p>
               <Button variant="elegant" asChild>
                 <Link to="/contact">Work With Me</Link>
