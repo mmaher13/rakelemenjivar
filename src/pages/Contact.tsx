@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, MapPin, Instagram } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -91,7 +92,7 @@ const Contact = () => {
                       BASED IN
                     </p>
                     <p className="font-sans text-foreground">
-                      Los Angeles, California
+                      El Salvador
                     </p>
                   </div>
                 </div>
@@ -105,7 +106,26 @@ const Contact = () => {
                       INSTAGRAM
                     </p>
                     <a
-                      href="https://instagram.com/rakelemenjivar"
+                      href="https://www.instagram.com/rakelemenjivar"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-sans text-foreground hover:text-primary transition-colors duration-300"
+                    >
+                      @rakelemenjivar
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 border border-border flex items-center justify-center text-primary">
+                    <SiTiktok size={18} />
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs letter-spacing-wide text-muted-foreground mb-1">
+                      TIKTOK
+                    </p>
+                    <a
+                      href="https://www.tiktok.com/@rakelemenjivar"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-sans text-foreground hover:text-primary transition-colors duration-300"

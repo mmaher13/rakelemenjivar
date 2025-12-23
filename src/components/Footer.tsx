@@ -1,4 +1,5 @@
 import { Instagram, Mail } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 
 const Footer = () => {
   return (
@@ -11,7 +12,7 @@ const Footer = () => {
           
           <div className="flex items-center gap-6">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/rakelemenjivar"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors duration-300"
@@ -20,7 +21,16 @@ const Footer = () => {
               <Instagram size={20} />
             </a>
             <a
-              href="mailto:contact@rakelemenjivar.com"
+              href="https://www.tiktok.com/@rakelemenjivar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors duration-300"
+              aria-label="TikTok"
+            >
+              <SiTiktok size={20} />
+            </a>
+            <a
+              href="mailto:rakele@rakelemenjivar.com"
               className="text-muted-foreground hover:text-primary transition-colors duration-300"
               aria-label="Email"
             >
