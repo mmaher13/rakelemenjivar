@@ -60,6 +60,7 @@ export default {
       fontFamily: {
         serif: ["var(--font-serif)"],
         sans: ["var(--font-sans)"],
+        logo: ["Italiana", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
