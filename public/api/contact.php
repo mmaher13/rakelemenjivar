@@ -27,6 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
+// Honeypot check - if filled, it's likely a bot
+$honeypot = isset($data['website']) ? trim($data['website']) : '';
+if (!empty($honeypot)) {
+    // Silently reject but return success to not tip off bots
+    http_response_code(200);
+    echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
+    exit();
+}
+
 // Validate required fields
 $name = isset($data['name']) ? trim($data['name']) : '';
 $email = isset($data['email']) ? trim($data['email']) : '';

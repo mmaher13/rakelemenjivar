@@ -17,6 +17,7 @@ const Contact = () => {
     email: "",
     company: "",
     message: "",
+    website: "", // honeypot field
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,7 +47,7 @@ const Contact = () => {
           title: "Message Sent",
           description: "Thank you! I'll get back to you soon.",
         });
-        setFormData({ name: "", email: "", company: "", message: "" });
+        setFormData({ name: "", email: "", company: "", message: "", website: "" });
       } else {
         toast({
           title: "Error",
@@ -162,6 +163,20 @@ const Contact = () => {
             {/* Right Column - Form */}
             <div className="opacity-0 animate-fade-up delay-400">
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot field - hidden from humans, visible to bots */}
+                <div className="absolute -left-[9999px] opacity-0 pointer-events-none" aria-hidden="true">
+                  <label htmlFor="website">Website</label>
+                  <Input
+                    id="website"
+                    name="website"
+                    type="text"
+                    value={formData.website}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div>
                   <label
                     htmlFor="name"
