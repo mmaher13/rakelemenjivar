@@ -134,15 +134,15 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-24 bg-charcoal border-t border-border">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 text-center">
-          <p className="font-sans text-xs letter-spacing-wider text-primary mb-4">
-            LET'S CREATE TOGETHER
-          </p>
-          <h2 className="font-serif text-3xl md:text-5xl font-light text-foreground mb-8">
-            Ready to bring your vision to life?
+          <h2 className="font-serif text-3xl md:text-5xl font-light text-foreground mb-4">
+            Available for Bookings
           </h2>
+          <p className="font-sans text-muted-foreground mb-8">
+            Start a conversation
+          </p>
           <Button variant="hero" size="lg" asChild>
             <Link to="/contact">
-              Start a Conversation
+              Contact
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
