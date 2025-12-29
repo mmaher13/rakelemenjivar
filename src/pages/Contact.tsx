@@ -18,7 +18,7 @@ const Contact = () => {
     company: "",
     message: "",
   });
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -26,22 +26,43 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const { name, email: userEmail, company, message } = formData;
-    const subject = encodeURIComponent(`Inquiry from ${name}${company ? ` - ${company}` : ""}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${userEmail}\nCompany: ${company || "N/A"}\n\nMessage:\n${message}`
-    );
-    
-    // Open mailto link using protected email
-    window.location.href = `${mailto}?subject=${subject}&body=${body}`;
-    
-    toast({
-      title: "Opening Email Client",
-      description: "Your email client will open with the message pre-filled.",
-    });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Message Sent",
+          description: "Thank you! I'll get back to you soon.",
+        });
+        setFormData({ name: "", email: "", company: "", message: "" });
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -214,8 +235,9 @@ const Contact = () => {
                   variant="hero"
                   size="lg"
                   className="w-full"
+                  disabled={isSubmitting}
                 >
-                  Send Message
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </form>
             </div>
