@@ -166,4 +166,29 @@
   .letter-spacing-wider {
     letter-spacing: 0.3em;
   }
+
+  /* Parallax utilities */
+  .parallax-container {
+    perspective: 1000px;
+    overflow: hidden;
+  }
+
+  .parallax-slow {
+    transform: translateZ(-100px) scale(1.1);
+  }
+
+  .parallax-medium {
+    transform: translateZ(-50px) scale(1.05);
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-slow,
+    .parallax-medium {
+      transform: none;
+    }
+  }
 }
