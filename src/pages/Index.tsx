@@ -4,16 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-main.jpg";
+import { useParallax, useElementParallax } from "@/hooks/useParallax";
 
 const Index = () => {
+  const heroParallax = useParallax({ speed: 0.4, direction: "down" });
+  const { ref: aboutImageRef, offset: aboutImageOffset } = useElementParallax({
+    speed: 0.1,
+    direction: "up",
+  });
+  const { ref: decorRef, offset: decorOffset } = useElementParallax({
+    speed: 0.15,
+    direction: "down",
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
+        {/* Background Image with Parallax */}
+        <div
+          className="absolute inset-0 will-change-transform"
+          style={{
+            transform: `translateY(${heroParallax}px) scale(1.1)`,
+          }}
+        >
           <img
             src={heroImage}
             alt="Rakele Menjivar - International Model"
@@ -90,14 +106,26 @@ const Index = () => {
               </Button>
             </div>
             <div className="relative">
-              <div className="aspect-[3/4] bg-charcoal-light overflow-hidden">
+              <div
+                ref={aboutImageRef}
+                className="aspect-[3/4] bg-charcoal-light overflow-hidden will-change-transform"
+                style={{
+                  transform: `translateY(${aboutImageOffset}px)`,
+                }}
+              >
                 <img
                   src={heroImage}
                   alt="Rakele Menjivar"
                   className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 border border-primary opacity-30" />
+              <div
+                ref={decorRef}
+                className="absolute -bottom-6 -left-6 w-32 h-32 border border-primary opacity-30 will-change-transform"
+                style={{
+                  transform: `translateY(${decorOffset}px)`,
+                }}
+              />
             </div>
           </div>
         </div>

@@ -13,8 +13,48 @@ import portfolio10 from "@/assets/portfolio-10.jpg";
 import portfolio11 from "@/assets/portfolio-11.jpg";
 import portfolio12 from "@/assets/portfolio-12.jpg";
 import portfolio13 from "@/assets/portfolio-13.jpg";
+import { useParallax } from "@/hooks/useParallax";
+
+const PortfolioImage = ({
+  image,
+  index,
+}: {
+  image: { src: string; alt: string; category: string };
+  index: number;
+}) => {
+  const parallax = useParallax({
+    speed: 0.03,
+    direction: index % 2 === 0 ? "up" : "down",
+  });
+
+  return (
+    <div
+      className="group relative overflow-hidden opacity-0 animate-fade-up hover-lift will-change-transform"
+      style={{
+        animationDelay: `${0.3 + index * 0.05}s`,
+        transform: `translateY(${parallax}px)`,
+      }}
+    >
+      <div className="aspect-[3/4] overflow-hidden">
+        <img
+          src={image.src}
+          alt={image.alt}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+        <p className="font-sans text-xs letter-spacing-wide text-primary mb-2">
+          {image.category.toUpperCase()}
+        </p>
+        <p className="font-serif text-xl text-foreground">{image.alt}</p>
+      </div>
+    </div>
+  );
+};
 
 const Portfolio = () => {
+  const heroParallax = useParallax({ speed: 0.2, direction: "down" });
+
   const portfolioImages = [
     { src: portfolio1, alt: "Editorial Portrait", category: "Editorial" },
     { src: portfolio2, alt: "Fashion Editorial", category: "Fashion" },
@@ -47,8 +87,14 @@ const Portfolio = () => {
       <Navigation />
 
       {/* Hero */}
-      <section className="pt-32 pb-16">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+      <section className="pt-32 pb-16 relative overflow-hidden">
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-charcoal/50 to-transparent will-change-transform"
+          style={{
+            transform: `translateY(${heroParallax}px)`,
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
           <p className="font-sans text-xs letter-spacing-wider text-primary mb-4 opacity-0 animate-fade-up">
             PORTFOLIO
           </p>
@@ -89,27 +135,7 @@ const Portfolio = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {portfolioImages.map((image, index) => (
-              <div
-                key={index}
-                className="group relative overflow-hidden opacity-0 animate-fade-up hover-lift"
-                style={{ animationDelay: `${0.3 + index * 0.05}s` }}
-              >
-                <div className="aspect-[3/4] overflow-hidden">
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
-                  <p className="font-sans text-xs letter-spacing-wide text-primary mb-2">
-                    {image.category.toUpperCase()}
-                  </p>
-                  <p className="font-serif text-xl text-foreground">
-                    {image.alt}
-                  </p>
-                </div>
-              </div>
+              <PortfolioImage key={index} image={image} index={index} />
             ))}
           </div>
         </div>
