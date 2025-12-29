@@ -134,7 +134,7 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-24 bg-charcoal border-t border-border">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 text-center">
-          <h2 className="font-serif text-3xl md:text-5xl font-light text-foreground mb-8">
+          <h2 className="font-logo text-3xl md:text-5xl font-light text-foreground mb-8">
             Available for Bookings
           </h2>
           <Button variant="hero" size="lg" asChild>
