@@ -141,41 +141,6 @@ const Portfolio = () => {
         </div>
       </section>
 
-      {/* Experience Section */}
-      <section className="py-20 border-t border-border">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center md:text-left">
-              <p className="font-sans text-xs letter-spacing-wider text-primary mb-4">
-                EXPERIENCE
-              </p>
-              <h2 className="font-serif text-2xl md:text-3xl font-light text-foreground">
-                Brands & Publications
-              </h2>
-            </div>
-            <div className="md:col-span-2">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                {[
-                  "Vogue Mexico",
-                  "Harper's Bazaar",
-                  "ELLE",
-                  "L'Officiel",
-                  "Glamour",
-                  "Marie Claire",
-                ].map((brand) => (
-                  <p
-                    key={brand}
-                    className="font-serif text-lg text-muted-foreground hover:text-foreground transition-colors duration-300"
-                  >
-                    {brand}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );
