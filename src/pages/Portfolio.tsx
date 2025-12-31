@@ -12,7 +12,6 @@ import portfolio9 from "@/assets/portfolio-9.jpg";
 import portfolio10 from "@/assets/portfolio-10.jpg";
 import portfolio11 from "@/assets/portfolio-11.jpg";
 import portfolio12 from "@/assets/portfolio-12.jpg";
-import portfolio13 from "@/assets/portfolio-13.jpg";
 import { useParallax } from "@/hooks/useParallax";
 
 const PortfolioImage = ({
@@ -56,19 +55,18 @@ const Portfolio = () => {
   const heroParallax = useParallax({ speed: 0.2, direction: "down" });
 
   const portfolioImages = [
-    { src: portfolio1, alt: "Editorial Portrait", category: "Editorial" },
-    { src: portfolio2, alt: "Fashion Editorial", category: "Fashion" },
-    { src: portfolio3, alt: "Beauty Campaign", category: "Beauty" },
-    { src: portfolio4, alt: "High Fashion", category: "Fashion" },
-    { src: portfolio5, alt: "Studio Portrait", category: "Portrait" },
-    { src: portfolio6, alt: "Runway Look", category: "Runway" },
-    { src: portfolio7, alt: "Commercial", category: "Commercial" },
-    { src: portfolio8, alt: "Editorial", category: "Editorial" },
-    { src: portfolio9, alt: "Fashion Shoot", category: "Fashion" },
-    { src: portfolio10, alt: "Beauty Portrait", category: "Beauty" },
-    { src: portfolio11, alt: "Lifestyle", category: "Lifestyle" },
-    { src: portfolio12, alt: "Editorial Fashion", category: "Editorial" },
-    { src: portfolio13, alt: "High Fashion Portrait", category: "Fashion" },
+    { src: portfolio1, alt: "Evening Gown", category: "Editorial" },
+    { src: portfolio2, alt: "Cocktail Dress", category: "Fashion" },
+    { src: portfolio3, alt: "Beauty Portrait", category: "Beauty" },
+    { src: portfolio4, alt: "Lifestyle Fashion", category: "Lifestyle" },
+    { src: portfolio5, alt: "Bridal Couture", category: "Bridal" },
+    { src: portfolio6, alt: "Flowing Elegance", category: "Editorial" },
+    { src: portfolio7, alt: "Noir Editorial", category: "Editorial" },
+    { src: portfolio8, alt: "Riviera Glamour", category: "Fashion" },
+    { src: portfolio9, alt: "Runway Collection", category: "Runway" },
+    { src: portfolio10, alt: "Automotive Editorial", category: "Editorial" },
+    { src: portfolio11, alt: "Nature Editorial", category: "Lifestyle" },
+    { src: portfolio12, alt: "Garden Portrait", category: "Beauty" },
   ];
 
   const measurements = [
