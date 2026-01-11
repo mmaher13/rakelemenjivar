@@ -51,7 +51,7 @@ const Index = () => {
               <span className="text-foreground">Menjivar</span>
             </h1>
             <p className="font-sans text-sm md:text-base text-muted-foreground max-w-md mb-8 opacity-0 animate-fade-up delay-200 leading-relaxed">
-              Professional fashion model from El Salvador bringing elegance and versatility to every frame. Available for
+              Professional fashion model bringing elegance and versatility to every frame. Available for
               editorial, commercial, runway, and brand collaborations worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-up delay-300">
@@ -91,7 +91,7 @@ const Index = () => {
                 Where Passion Meets Profession
               </h2>
               <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                As a professional international fashion model from El Salvador, I bring years of
+                As a professional international fashion model, I bring years of
                 experience across diverse modeling categories. From high fashion
                 editorials to commercial campaigns, luxury brand ambassadorships to runway shows,
                 my versatility and professionalism ensure every project exceeds expectations.
@@ -99,7 +99,7 @@ const Index = () => {
               <p className="font-sans text-muted-foreground leading-relaxed mb-8">
                 I believe in collaborative artistry—working closely with
                 photographers, creative directors, and brands worldwide to bring unique
-                visions to life. Available for bookings in Latin America, North America, Europe, and internationally.
+                visions to life. Available for international bookings.
               </p>
               <Button variant="elegant" asChild>
                 <Link to="/contact">Work With Me</Link>
