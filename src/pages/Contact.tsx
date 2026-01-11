@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useProtectedEmail } from "@/hooks/useProtectedEmail";
-import { Mail, MapPin, Instagram } from "lucide-react";
+import { Mail, Instagram } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
 
 const Contact = () => {
@@ -103,20 +103,6 @@ const Contact = () => {
                     >
                       {email}
                     </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 border border-border flex items-center justify-center text-primary">
-                    <MapPin size={18} />
-                  </div>
-                  <div>
-                    <p className="font-sans text-xs letter-spacing-wide text-muted-foreground mb-1">
-                      BASED IN
-                    </p>
-                    <p className="font-sans text-foreground">
-                      El Salvador
-                    </p>
                   </div>
                 </div>
 
