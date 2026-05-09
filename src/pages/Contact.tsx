@@ -227,6 +227,7 @@ const Contact = () => {
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    rows={6}
                     placeholder="Tell me about your project, timeline, and vision..."
                   />
                 </div>
