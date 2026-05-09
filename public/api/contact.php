@@ -8,7 +8,16 @@
  *   3. From this /api directory on the server, run:
  *        composer require phpmailer/phpmailer
  *      (this creates /api/vendor/ and /api/composer.json)
- *   4. Create /var/www/rakelemenjivar/.env.mail with Gmail credentials (see deploy notes).
+ *   4. Create /var/www/rakelemenjivar.com/.env.mail with Gmail credentials.
+ *
+ * Logging:
+ *   All activity is appended to /api/contact.log (relative to this file).
+ *   The web server user (www-data) must be able to write to it. The script
+ *   will auto-create the file on first run; if that fails, ensure the api/
+ *   directory is writable by www-data, or pre-create the file:
+ *     sudo touch /var/www/rakelemenjivar.com/dist/api/contact.log
+ *     sudo chown www-data:www-data /var/www/rakelemenjivar.com/dist/api/contact.log
+ *     sudo chmod 644 /var/www/rakelemenjivar.com/dist/api/contact.log
  */
 
 header('Content-Type: application/json');
@@ -16,12 +25,38 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// ---------- Logger ----------
+define('CONTACT_LOG_FILE', __DIR__ . '/contact.log');
+define('CONTACT_REQUEST_ID', substr(bin2hex(random_bytes(4)), 0, 8));
+
+function clog(string $level, string $msg, array $ctx = []): void {
+    $line = sprintf(
+        "[%s] [%s] [%s] %s%s\n",
+        date('Y-m-d H:i:s'),
+        CONTACT_REQUEST_ID,
+        strtoupper($level),
+        $msg,
+        $ctx ? ' ' . json_encode($ctx, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : ''
+    );
+    @file_put_contents(CONTACT_LOG_FILE, $line, FILE_APPEND | LOCK_EX);
+    // Also send to Apache error log as a fallback
+    error_log('contact.php ' . trim($line));
+}
+
+clog('info', '--- request received', [
+    'method' => $_SERVER['REQUEST_METHOD'] ?? '?',
+    'ip'     => $_SERVER['REMOTE_ADDR']     ?? '?',
+    'ua'     => $_SERVER['HTTP_USER_AGENT'] ?? '?',
+]);
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    clog('info', 'preflight OPTIONS, returning 200');
     http_response_code(200);
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    clog('warn', 'method not allowed');
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit();
@@ -30,10 +65,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // ---------- Parse + validate input ----------
 $input = file_get_contents('php://input');
 $data  = json_decode($input, true) ?: [];
+clog('info', 'payload parsed', [
+    'bytes'    => strlen($input),
+    'has_name' => !empty($data['name']),
+    'has_email'=> !empty($data['email']),
+    'has_msg'  => !empty($data['message']),
+]);
 
 // Honeypot: bots fill the hidden "website" field
 $honeypot = isset($data['website']) ? trim($data['website']) : '';
 if (!empty($honeypot)) {
+    clog('warn', 'honeypot triggered, silently dropping', ['honeypot' => $honeypot]);
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
     exit();
@@ -58,25 +100,29 @@ if ($message === '')                                     { $errors[] = 'Message 
 elseif (strlen($message) > 5000)                         { $errors[] = 'Message must be less than 5000 characters'; }
 
 if (!empty($errors)) {
+    clog('warn', 'validation failed', ['errors' => $errors]);
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => implode(', ', $errors)]);
     exit();
 }
+clog('info', 'validation OK', ['from' => $email, 'name' => $name]);
 
 // ---------- Load PHPMailer ----------
 $autoload = __DIR__ . '/vendor/autoload.php';
 if (!file_exists($autoload)) {
+    clog('error', 'vendor/autoload.php missing', ['expected' => $autoload]);
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Mail library not installed on server.']);
     exit();
 }
 require $autoload;
+clog('info', 'PHPMailer autoload loaded');
 
 // ---------- Load .env.mail ----------
-// Look in a few common locations so this works regardless of webroot layout.
 function load_env_mail(array $candidates): array {
     foreach ($candidates as $path) {
         if (is_file($path) && is_readable($path)) {
+            clog('info', '.env.mail found', ['path' => $path]);
             $env = [];
             foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
                 $line = trim($line);
@@ -88,15 +134,17 @@ function load_env_mail(array $candidates): array {
             return $env;
         }
     }
+    clog('error', '.env.mail not found in any candidate path', ['candidates' => $candidates]);
     return [];
 }
 
-$env = load_env_mail([
+$envCandidates = [
     '/var/www/rakelemenjivar/.env.mail',
     '/var/www/rakelemenjivar.com/.env.mail',
     dirname(__DIR__, 2) . '/.env.mail',
     dirname(__DIR__) . '/.env.mail',
-]);
+];
+$env = load_env_mail($envCandidates);
 
 $gmailUser = $env['GMAIL_USER']         ?? '';
 $gmailPass = $env['GMAIL_APP_PASSWORD'] ?? '';
@@ -104,7 +152,15 @@ $fromName  = $env['GMAIL_FROM_NAME']    ?? 'Rakele Menjivar';
 $fromEmail = $env['GMAIL_FROM_EMAIL']   ?? 'booking@rakelemenjivar.com';
 $toEmail   = $env['GMAIL_TO_EMAIL']     ?? 'booking@rakelemenjivar.com';
 
+clog('info', 'env loaded', [
+    'gmail_user_set' => $gmailUser !== '',
+    'gmail_pass_set' => $gmailPass !== '',
+    'from_email'     => $fromEmail,
+    'to_email'       => $toEmail,
+]);
+
 if ($gmailUser === '' || $gmailPass === '') {
+    clog('error', 'GMAIL_USER or GMAIL_APP_PASSWORD missing');
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Mail credentials not configured on server.']);
     exit();
@@ -112,21 +168,27 @@ if ($gmailUser === '' || $gmailPass === '') {
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
 
 $mail = new PHPMailer(true);
 
+// Capture PHPMailer SMTP debug output into our log
+$mail->SMTPDebug   = SMTP::DEBUG_SERVER;     // 0=off, 2=client+server, 3=connection
+$mail->Debugoutput = function ($str, $level) {
+    clog('smtp', trim($str), ['lvl' => $level]);
+};
+
 try {
-    // Gmail SMTP
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = $gmailUser;          // e.g. youraccount@gmail.com (the authenticated Gmail)
-    $mail->Password   = $gmailPass;          // Gmail App Password (no spaces)
+    $mail->Username   = $gmailUser;
+    $mail->Password   = $gmailPass;
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
     $mail->CharSet    = 'UTF-8';
+    $mail->Timeout    = 20;
 
-    // From = booking@rakelemenjivar.com (must be configured as a Gmail "Send mail as" alias)
     $mail->setFrom($fromEmail, $fromName);
     $mail->addAddress($toEmail, $fromName);
     $mail->addReplyTo($email, $name);
@@ -147,11 +209,17 @@ try {
     $mail->isHTML(false);
     $mail->Body = $plain;
 
+    clog('info', 'attempting primary SMTP send', ['to' => $toEmail, 'subject' => $subject]);
     $mail->send();
+    clog('info', 'primary SMTP send OK');
 
     // ---------- Auto-reply to the form submitter ----------
     try {
         $reply = new PHPMailer(true);
+        $reply->SMTPDebug   = SMTP::DEBUG_SERVER;
+        $reply->Debugoutput = function ($str, $level) {
+            clog('smtp-reply', trim($str), ['lvl' => $level]);
+        };
         $reply->isSMTP();
         $reply->Host       = 'smtp.gmail.com';
         $reply->SMTPAuth   = true;
@@ -160,6 +228,7 @@ try {
         $reply->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $reply->Port       = 587;
         $reply->CharSet    = 'UTF-8';
+        $reply->Timeout    = 20;
 
         $reply->setFrom($fromEmail, $fromName);
         $reply->addAddress($email, $name);
@@ -175,18 +244,27 @@ try {
             "Rakele Menjivar\n" .
             "booking@rakelemenjivar.com";
 
+        clog('info', 'attempting auto-reply', ['to' => $email]);
         $reply->send();
+        clog('info', 'auto-reply OK');
     } catch (Exception $e) {
-        error_log('Auto-reply failed: ' . $e->getMessage());
+        clog('error', 'auto-reply failed', [
+            'message'   => $e->getMessage(),
+            'errorInfo' => $reply->ErrorInfo ?? null,
+        ]);
     }
 
+    clog('info', '=== success, returning 200');
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
 } catch (Exception $e) {
+    clog('error', 'primary SMTP send FAILED', [
+        'message'   => $e->getMessage(),
+        'errorInfo' => $mail->ErrorInfo ?? null,
+    ]);
     http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => 'Failed to send message. Please try again later.',
-        // 'debug' => $mail->ErrorInfo,
     ]);
 }
