@@ -13,6 +13,7 @@ import portfolio10 from "@/assets/portfolio-10.jpg";
 import portfolio11 from "@/assets/portfolio-11.jpg";
 import portfolio12 from "@/assets/portfolio-12.jpg";
 import portfolio13 from "@/assets/portfolio-13.jpg";
+import portfolio14 from "@/assets/portfolio-14.jpg";
 import { useParallax } from "@/hooks/useParallax";
 
 const PortfolioImage = ({
@@ -69,6 +70,7 @@ const Portfolio = () => {
     { src: portfolio11, alt: "Riviera Drive", category: "Lifestyle" },
     { src: portfolio12, alt: "City Lights", category: "Fashion" },
     { src: portfolio13, alt: "Wild Waters", category: "Beauty" },
+    { src: portfolio14, alt: "Imperial Garden", category: "Couture" },
   ];
 
   const measurements = [
