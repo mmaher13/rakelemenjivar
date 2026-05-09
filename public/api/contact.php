@@ -1,73 +1,61 @@
 <?php
 /**
- * Contact Form Email Handler
- * Receives POST data and sends email to booking@rakelemenjivar.com
+ * Contact Form Email Handler (PHPMailer + SMTP)
+ *
+ * Server requirements:
+ *   1. PHP 7.4+ with openssl extension
+ *   2. Composer installed:  sudo apt install composer
+ *   3. From this /api directory on the server, run:
+ *        composer require phpmailer/phpmailer
+ *      (this creates /api/vendor/ and /api/composer.json)
+ *   4. Copy smtp-config.example.php to smtp-config.php and fill in real SMTP credentials.
  */
 
-// CORS headers for the React frontend
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit();
 }
 
-// Get JSON input
+// ---------- Parse + validate input ----------
 $input = file_get_contents('php://input');
-$data = json_decode($input, true);
+$data  = json_decode($input, true) ?: [];
 
-// Honeypot check - if filled, it's likely a bot
+// Honeypot: bots fill the hidden "website" field
 $honeypot = isset($data['website']) ? trim($data['website']) : '';
 if (!empty($honeypot)) {
-    // Silently reject but return success to not tip off bots
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
     exit();
 }
 
-// Validate required fields
-$name = isset($data['name']) ? trim($data['name']) : '';
-$email = isset($data['email']) ? trim($data['email']) : '';
+$name    = isset($data['name'])    ? trim($data['name'])    : '';
+$email   = isset($data['email'])   ? trim($data['email'])   : '';
 $company = isset($data['company']) ? trim($data['company']) : '';
 $message = isset($data['message']) ? trim($data['message']) : '';
 
-// Validation
 $errors = [];
+if ($name === '')                                        { $errors[] = 'Name is required'; }
+elseif (strlen($name) > 100)                             { $errors[] = 'Name must be less than 100 characters'; }
 
-if (empty($name)) {
-    $errors[] = 'Name is required';
-} elseif (strlen($name) > 100) {
-    $errors[] = 'Name must be less than 100 characters';
-}
+if ($email === '')                                       { $errors[] = 'Email is required'; }
+elseif (!filter_var($email, FILTER_VALIDATE_EMAIL))      { $errors[] = 'Invalid email address'; }
+elseif (strlen($email) > 255)                            { $errors[] = 'Email must be less than 255 characters'; }
 
-if (empty($email)) {
-    $errors[] = 'Email is required';
-} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Invalid email address';
-} elseif (strlen($email) > 255) {
-    $errors[] = 'Email must be less than 255 characters';
-}
+if (strlen($company) > 200)                              { $errors[] = 'Company name must be less than 200 characters'; }
 
-if (strlen($company) > 200) {
-    $errors[] = 'Company name must be less than 200 characters';
-}
-
-if (empty($message)) {
-    $errors[] = 'Message is required';
-} elseif (strlen($message) > 5000) {
-    $errors[] = 'Message must be less than 5000 characters';
-}
+if ($message === '')                                     { $errors[] = 'Message is required'; }
+elseif (strlen($message) > 5000)                         { $errors[] = 'Message must be less than 5000 characters'; }
 
 if (!empty($errors)) {
     http_response_code(400);
@@ -75,52 +63,74 @@ if (!empty($errors)) {
     exit();
 }
 
-// Sanitize inputs for email
-$name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
-$company = htmlspecialchars($company, ENT_QUOTES, 'UTF-8');
-$message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+// ---------- Load PHPMailer + config ----------
+$autoload   = __DIR__ . '/vendor/autoload.php';
+$configPath = __DIR__ . '/smtp-config.php';
 
-// Email configuration
-$to = 'booking@rakelemenjivar.com';
-$subject = "New Inquiry from {$name}" . ($company ? " - {$company}" : "");
-
-// Build email body
-$emailBody = "
-New contact form submission from rakelemenjivar.com
-
-----------------------------------------
-FROM: {$name}
-EMAIL: {$email}
-COMPANY: " . ($company ?: 'Not provided') . "
-----------------------------------------
-
-MESSAGE:
-{$message}
-
-----------------------------------------
-Sent from the website contact form.
-";
-
-// Email headers
-$headers = [
-    'From' => "noreply@rakelemenjivar.com",
-    'Reply-To' => $email,
-    'X-Mailer' => 'PHP/' . phpversion(),
-    'Content-Type' => 'text/plain; charset=UTF-8'
-];
-
-$headerString = '';
-foreach ($headers as $key => $value) {
-    $headerString .= "{$key}: {$value}\r\n";
+if (!file_exists($autoload)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Mail library not installed on server.']);
+    exit();
+}
+if (!file_exists($configPath)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'SMTP configuration missing on server.']);
+    exit();
 }
 
-// Send email
-$mailSent = mail($to, $subject, $emailBody, $headerString);
+require $autoload;
+$config = require $configPath;
 
-if ($mailSent) {
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+$mail = new PHPMailer(true);
+
+try {
+    // SMTP transport
+    $mail->isSMTP();
+    $mail->Host       = $config['host'];
+    $mail->SMTPAuth   = true;
+    $mail->Username   = $config['username'];
+    $mail->Password   = $config['password'];
+    $mail->SMTPSecure = ($config['encryption'] === 'ssl')
+        ? PHPMailer::ENCRYPTION_SMTPS
+        : PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port       = (int) $config['port'];
+    $mail->CharSet    = 'UTF-8';
+
+    // From / To / Reply-To
+    $mail->setFrom($config['from_email'], $config['from_name']);
+    $mail->addAddress($config['to_email'], $config['to_name']);
+    $mail->addReplyTo($email, $name);
+
+    // Subject + body
+    $subject = "New Inquiry from {$name}" . ($company !== '' ? " - {$company}" : '');
+    $mail->Subject = $subject;
+
+    $plain  = "New contact form submission from rakelemenjivar.com\n";
+    $plain .= "----------------------------------------\n";
+    $plain .= "FROM: {$name}\n";
+    $plain .= "EMAIL: {$email}\n";
+    $plain .= "COMPANY: " . ($company !== '' ? $company : 'Not provided') . "\n";
+    $plain .= "----------------------------------------\n\n";
+    $plain .= "MESSAGE:\n{$message}\n\n";
+    $plain .= "----------------------------------------\n";
+    $plain .= "Sent from the website contact form.";
+
+    $mail->isHTML(false);
+    $mail->Body = $plain;
+
+    $mail->send();
+
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
-} else {
+} catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Failed to send message. Please try again later.']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to send message. Please try again later.',
+        // Uncomment for debugging on the server:
+        // 'debug' => $mail->ErrorInfo,
+    ]);
 }
