@@ -271,7 +271,6 @@ try {
 
         $reply->setFrom($fromEmail, $fromName);
         $reply->addAddress($email, $name);
-        $reply->addBCC('rakele@rakelemenjivar.com', $fromName);
         $reply->addReplyTo($fromEmail, $fromName);
 
         $reply->Subject = 'Thank you for your message';
