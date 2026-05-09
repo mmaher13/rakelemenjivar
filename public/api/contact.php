@@ -1,6 +1,6 @@
 <?php
 /**
- * Contact Form Email Handler (PHPMailer + SMTP)
+ * Contact Form Email Handler (PHPMailer + Gmail SMTP)
  *
  * Server requirements:
  *   1. PHP 7.4+ with openssl extension
@@ -8,7 +8,7 @@
  *   3. From this /api directory on the server, run:
  *        composer require phpmailer/phpmailer
  *      (this creates /api/vendor/ and /api/composer.json)
- *   4. Copy smtp-config.example.php to smtp-config.php and fill in real SMTP credentials.
+ *   4. Create /var/www/rakelemenjivar/.env.mail with Gmail credentials (see deploy notes).
  */
 
 header('Content-Type: application/json');
@@ -63,23 +63,52 @@ if (!empty($errors)) {
     exit();
 }
 
-// ---------- Load PHPMailer + config ----------
-$autoload   = __DIR__ . '/vendor/autoload.php';
-$configPath = __DIR__ . '/smtp-config.php';
-
+// ---------- Load PHPMailer ----------
+$autoload = __DIR__ . '/vendor/autoload.php';
 if (!file_exists($autoload)) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Mail library not installed on server.']);
     exit();
 }
-if (!file_exists($configPath)) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'SMTP configuration missing on server.']);
-    exit();
+require $autoload;
+
+// ---------- Load .env.mail ----------
+// Look in a few common locations so this works regardless of webroot layout.
+function load_env_mail(array $candidates): array {
+    foreach ($candidates as $path) {
+        if (is_file($path) && is_readable($path)) {
+            $env = [];
+            foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+                $line = trim($line);
+                if ($line === '' || $line[0] === '#') continue;
+                if (strpos($line, '=') === false) continue;
+                [$k, $v] = explode('=', $line, 2);
+                $env[trim($k)] = trim($v, " \t\"'");
+            }
+            return $env;
+        }
+    }
+    return [];
 }
 
-require $autoload;
-$config = require $configPath;
+$env = load_env_mail([
+    '/var/www/rakelemenjivar/.env.mail',
+    '/var/www/rakelemenjivar.com/.env.mail',
+    dirname(__DIR__, 2) . '/.env.mail',
+    dirname(__DIR__) . '/.env.mail',
+]);
+
+$gmailUser = $env['GMAIL_USER']         ?? '';
+$gmailPass = $env['GMAIL_APP_PASSWORD'] ?? '';
+$fromName  = $env['GMAIL_FROM_NAME']    ?? 'Rakele Menjivar';
+$fromEmail = $env['GMAIL_FROM_EMAIL']   ?? 'booking@rakelemenjivar.com';
+$toEmail   = $env['GMAIL_TO_EMAIL']     ?? 'booking@rakelemenjivar.com';
+
+if ($gmailUser === '' || $gmailPass === '') {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Mail credentials not configured on server.']);
+    exit();
+}
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -87,24 +116,21 @@ use PHPMailer\PHPMailer\Exception;
 $mail = new PHPMailer(true);
 
 try {
-    // SMTP transport
+    // Gmail SMTP
     $mail->isSMTP();
-    $mail->Host       = $config['host'];
+    $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = $config['username'];
-    $mail->Password   = $config['password'];
-    $mail->SMTPSecure = ($config['encryption'] === 'ssl')
-        ? PHPMailer::ENCRYPTION_SMTPS
-        : PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = (int) $config['port'];
+    $mail->Username   = $gmailUser;          // e.g. youraccount@gmail.com (the authenticated Gmail)
+    $mail->Password   = $gmailPass;          // Gmail App Password (no spaces)
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port       = 587;
     $mail->CharSet    = 'UTF-8';
 
-    // From / To / Reply-To
-    $mail->setFrom($config['from_email'], $config['from_name']);
-    $mail->addAddress($config['to_email'], $config['to_name']);
+    // From = booking@rakelemenjivar.com (must be configured as a Gmail "Send mail as" alias)
+    $mail->setFrom($fromEmail, $fromName);
+    $mail->addAddress($toEmail, $fromName);
     $mail->addReplyTo($email, $name);
 
-    // Subject + body
     $subject = "New Inquiry from {$name}" . ($company !== '' ? " - {$company}" : '');
     $mail->Subject = $subject;
 
@@ -127,21 +153,18 @@ try {
     try {
         $reply = new PHPMailer(true);
         $reply->isSMTP();
-        $reply->Host       = $config['host'];
+        $reply->Host       = 'smtp.gmail.com';
         $reply->SMTPAuth   = true;
-        $reply->Username   = $config['username'];
-        $reply->Password   = $config['password'];
-        $reply->SMTPSecure = ($config['encryption'] === 'ssl')
-            ? PHPMailer::ENCRYPTION_SMTPS
-            : PHPMailer::ENCRYPTION_STARTTLS;
-        $reply->Port       = (int) $config['port'];
+        $reply->Username   = $gmailUser;
+        $reply->Password   = $gmailPass;
+        $reply->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $reply->Port       = 587;
         $reply->CharSet    = 'UTF-8';
 
-        // From booking@, To submitter, CC booking@
-        $reply->setFrom('booking@rakelemenjivar.com', 'Rakele Menjivar');
+        $reply->setFrom($fromEmail, $fromName);
         $reply->addAddress($email, $name);
-        $reply->addCC('booking@rakelemenjivar.com', 'Rakele Menjivar');
-        $reply->addReplyTo('booking@rakelemenjivar.com', 'Rakele Menjivar');
+        $reply->addCC($fromEmail, $fromName);
+        $reply->addReplyTo($fromEmail, $fromName);
 
         $reply->Subject = 'Thank you for your message';
         $reply->isHTML(false);
@@ -154,7 +177,6 @@ try {
 
         $reply->send();
     } catch (Exception $e) {
-        // Auto-reply failure should not break the main submission flow.
         error_log('Auto-reply failed: ' . $e->getMessage());
     }
 
@@ -165,7 +187,6 @@ try {
     echo json_encode([
         'success' => false,
         'message' => 'Failed to send message. Please try again later.',
-        // Uncomment for debugging on the server:
         // 'debug' => $mail->ErrorInfo,
     ]);
 }
