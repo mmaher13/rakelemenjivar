@@ -26,7 +26,25 @@ header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // ---------- Logger ----------
-define('CONTACT_LOG_FILE', __DIR__ . '/contact.log');
+// Log file lives OUTSIDE dist/ so it survives `npm run build` (which wipes dist/).
+// Falls back to /tmp if the preferred path is not writable.
+(function () {
+    $candidates = [
+        '/var/www/rakelemenjivar.com/logs/contact.log',
+        '/var/log/rakelemenjivar/contact.log',
+        __DIR__ . '/contact.log', // legacy fallback
+        '/tmp/rakelemenjivar-contact.log',
+    ];
+    foreach ($candidates as $path) {
+        $dir = dirname($path);
+        if (!is_dir($dir)) continue;
+        if (is_writable($dir) || (file_exists($path) && is_writable($path))) {
+            define('CONTACT_LOG_FILE', $path);
+            return;
+        }
+    }
+    define('CONTACT_LOG_FILE', '/tmp/rakelemenjivar-contact.log');
+})();
 define('CONTACT_REQUEST_ID', substr(bin2hex(random_bytes(4)), 0, 8));
 
 function clog(string $level, string $msg, array $ctx = []): void {
