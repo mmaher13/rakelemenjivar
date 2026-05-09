@@ -12,6 +12,7 @@ import portfolio9 from "@/assets/portfolio-9.jpg";
 import portfolio10 from "@/assets/portfolio-10.jpg";
 import portfolio11 from "@/assets/portfolio-11.jpg";
 import portfolio12 from "@/assets/portfolio-12.jpg";
+import portfolio13 from "@/assets/portfolio-13.jpg";
 import { useParallax } from "@/hooks/useParallax";
 
 const PortfolioImage = ({
@@ -55,18 +56,19 @@ const Portfolio = () => {
   const heroParallax = useParallax({ speed: 0.2, direction: "down" });
 
   const portfolioImages = [
-    { src: portfolio1, alt: "Evening Gown", category: "Editorial" },
-    { src: portfolio2, alt: "Cocktail Dress", category: "Fashion" },
-    { src: portfolio3, alt: "Beauty Portrait", category: "Beauty" },
-    { src: portfolio4, alt: "Lifestyle Fashion", category: "Lifestyle" },
-    { src: portfolio5, alt: "Bridal Couture", category: "Bridal" },
-    { src: portfolio6, alt: "Flowing Elegance", category: "Editorial" },
-    { src: portfolio7, alt: "Noir Editorial", category: "Editorial" },
-    { src: portfolio8, alt: "Riviera Glamour", category: "Fashion" },
-    { src: portfolio9, alt: "Runway Collection", category: "Runway" },
-    { src: portfolio10, alt: "Automotive Editorial", category: "Editorial" },
-    { src: portfolio11, alt: "Nature Editorial", category: "Lifestyle" },
-    { src: portfolio12, alt: "Garden Portrait", category: "Beauty" },
+    { src: portfolio1, alt: "Editorial Portrait", category: "Editorial" },
+    { src: portfolio2, alt: "Lavender Fields", category: "Editorial" },
+    { src: portfolio3, alt: "Polka Dot Romance", category: "Fashion" },
+    { src: portfolio4, alt: "Window Light", category: "Editorial" },
+    { src: portfolio5, alt: "Noir Hallway", category: "Fashion" },
+    { src: portfolio6, alt: "Golden Hour", category: "Beauty" },
+    { src: portfolio7, alt: "Parisian Streets", category: "Lifestyle" },
+    { src: portfolio8, alt: "Black Glimmer", category: "Couture" },
+    { src: portfolio9, alt: "Crimson Brocade", category: "Editorial" },
+    { src: portfolio10, alt: "Modern Elegance", category: "Editorial" },
+    { src: portfolio11, alt: "Riviera Drive", category: "Lifestyle" },
+    { src: portfolio12, alt: "City Lights", category: "Fashion" },
+    { src: portfolio13, alt: "Wild Waters", category: "Beauty" },
   ];
 
   const measurements = [
