@@ -11,13 +11,16 @@
  *   4. Create /var/www/rakelemenjivar.com/.env.mail with Gmail credentials.
  *
  * Logging:
- *   All activity is appended to /api/contact.log (relative to this file).
- *   The web server user (www-data) must be able to write to it. The script
- *   will auto-create the file on first run; if that fails, ensure the api/
- *   directory is writable by www-data, or pre-create the file:
- *     sudo touch /var/www/rakelemenjivar.com/dist/api/contact.log
- *     sudo chown www-data:www-data /var/www/rakelemenjivar.com/dist/api/contact.log
- *     sudo chmod 644 /var/www/rakelemenjivar.com/dist/api/contact.log
+ *   All activity is appended to /var/www/rakelemenjivar.com/logs/contact.log
+ *   (outside dist/ so it survives `npm run build`). The web server user
+ *   (www-data) must be able to write to it. scripts/deploy.sh creates this
+ *   automatically. To set up manually:
+ *     sudo mkdir -p /var/www/rakelemenjivar.com/logs
+ *     sudo touch /var/www/rakelemenjivar.com/logs/contact.log
+ *     sudo chown -R www-data:www-data /var/www/rakelemenjivar.com/logs
+ *     sudo chmod 644 /var/www/rakelemenjivar.com/logs/contact.log
+ *   Tail it with:
+ *     sudo tail -f /var/www/rakelemenjivar.com/logs/contact.log
  */
 
 header('Content-Type: application/json');
