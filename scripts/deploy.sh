@@ -64,6 +64,7 @@ fi
 echo "==> 5/5  Fixing permissions and reloading Apache"
 sudo chown -R www-data:www-data "${REPO_DIR}/dist"
 sudo chown -R www-data:www-data "${REPO_DIR}/public/api/vendor" 2>/dev/null || true
+sudo chown www-data:www-data "${REPO_DIR}/.env.mail" 2>/dev/null || true
 sudo chmod 600 "${REPO_DIR}/.env.mail" 2>/dev/null || true
 sudo systemctl reload apache2
 
