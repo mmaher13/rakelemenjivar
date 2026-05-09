@@ -237,6 +237,13 @@ try {
 
         $reply->Subject = 'Thank you for your message';
         $reply->isHTML(false);
+        // Honor X-Forwarded-For when behind Apache/proxy
+        $ipRaw = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $clientIp = trim(explode(',', $ipRaw)[0]);
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $referer = $_SERVER['HTTP_REFERER'] ?? 'direct';
+        $submittedAt = date('Y-m-d H:i:s T');
+
         $reply->Body =
             "Hi {$name},\n\n" .
             "Thank you for the message. Rakele will get back to you shortly.\n\n" .
@@ -250,7 +257,15 @@ try {
             "EMAIL: {$email}\n" .
             "COMPANY: " . ($company !== '' ? $company : 'Not provided') . "\n\n" .
             "PROJECT DETAILS:\n" .
-            "{$message}\n" .
+            "{$message}\n\n" .
+            "----------------------------------------\n" .
+            "METADATA\n" .
+            "----------------------------------------\n" .
+            "SUBMITTED: {$submittedAt}\n" .
+            "IP ADDRESS: {$clientIp}\n" .
+            "USER AGENT: {$userAgent}\n" .
+            "REFERRER: {$referer}\n" .
+            "REQUEST ID: " . CONTACT_REQUEST_ID . "\n" .
             "----------------------------------------";
 
         clog('info', 'attempting auto-reply', ['to' => $email]);
