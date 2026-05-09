@@ -22,6 +22,9 @@ sudo chmod 755 "${REPO_DIR}/logs"
 sudo chmod 644 "${REPO_DIR}/logs/contact.log"
 
 echo "==> 1/5  Pulling latest from GitHub"
+# .env.mail is tracked in the repo (source of truth). Discard any
+# in-place edits on the server so the pull can fast-forward cleanly.
+git checkout -- .env.mail 2>/dev/null || true
 git pull --ff-only
 
 echo "==> 2/5  Installing npm dependencies"

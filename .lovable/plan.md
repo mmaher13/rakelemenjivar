@@ -1,17 +1,35 @@
-## Change
+## Problem
 
-Route the **new inquiry** email to `rakele@skygr.com` while keeping the **confirmation** email sent from `booking@rakelemenjivar.com` to the client (unchanged).
+The server's `.env.mail` was edited in place (probably when you set `GMAIL_TO_EMAIL` previously). Now `git pull --ff-only` refuses because that local change conflicts with the incoming version from GitHub.
 
-### Edits
+## Fix
 
-**1. `.env.mail`**
-- Change `GMAIL_TO_EMAIL=booking@rakelemenjivar.com` → `GMAIL_TO_EMAIL=rakele@skygr.com`
+Update `scripts/deploy.sh` so it discards local changes to `.env.mail` before pulling. The repo is the source of truth for `.env.mail` (that's the explicit design — credentials are committed so they never get lost), so it's safe to overwrite the server copy.
 
-This makes the primary inquiry email (the one with the client's submission details) deliver to `rakele@skygr.com`. SMTP auth still uses `booking@rakelemenjivar.com` (GMAIL_USER), and the From header stays `booking@rakelemenjivar.com` (GMAIL_FROM_EMAIL), so Gmail's "send to self" deduplication no longer applies.
+### Edit to `scripts/deploy.sh` (around lines 24-25)
 
-**2. `public/api/contact.php` (auto-reply to client)**
-- No change to From / To — already sends from `booking@rakelemenjivar.com` to the client.
-- Question: should the existing `addBCC('rakele@rakelemenjivar.com', ...)` on the auto-reply stay, or be removed? Since the new inquiry now lands in `rakele@skygr.com`, the BCC of the client confirmation to `rakele@rakelemenjivar.com` may be redundant. Default plan: **remove the BCC** to keep things clean. Confirm if you'd rather keep it.
+Replace:
+```bash
+echo "==> 1/5  Pulling latest from GitHub"
+git pull --ff-only
+```
 
-### Deployment note
-After deploy, the server copy at `/var/www/rakelemenjivar.com/.env.mail` must be updated to the new `GMAIL_TO_EMAIL` value (the deploy script copies `.env.mail` from the repo, so a normal deploy handles it).
+With:
+```bash
+echo "==> 1/5  Pulling latest from GitHub"
+# .env.mail is tracked in the repo (source of truth). Discard any
+# in-place edits on the server so the pull can fast-forward cleanly.
+git checkout -- .env.mail 2>/dev/null || true
+git pull --ff-only
+```
+
+### One-time command to unblock the current deploy
+
+Before re-running `./deploy.sh`, run on the server:
+```bash
+cd /var/www/rakelemenjivar.com
+git checkout -- .env.mail
+./scripts/deploy.sh
+```
+
+After that, future deploys will self-heal automatically.
