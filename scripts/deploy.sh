@@ -51,6 +51,13 @@ HTACCESS
 fi
 
 echo "==> 5/5  Fixing permissions and reloading Apache"
+# Persistent log dir (survives `npm run build` wiping dist/)
+sudo mkdir -p "${REPO_DIR}/logs"
+sudo touch "${REPO_DIR}/logs/contact.log"
+sudo chown -R www-data:www-data "${REPO_DIR}/logs"
+sudo chmod 755 "${REPO_DIR}/logs"
+sudo chmod 644 "${REPO_DIR}/logs/contact.log"
+
 sudo chown -R www-data:www-data "${REPO_DIR}/dist"
 sudo chown -R www-data:www-data "${REPO_DIR}/public/api/vendor" 2>/dev/null || true
 sudo chmod 600 "${REPO_DIR}/.env.mail" 2>/dev/null || true
