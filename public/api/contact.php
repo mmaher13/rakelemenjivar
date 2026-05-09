@@ -123,6 +123,41 @@ try {
 
     $mail->send();
 
+    // ---------- Auto-reply to the form submitter ----------
+    try {
+        $reply = new PHPMailer(true);
+        $reply->isSMTP();
+        $reply->Host       = $config['host'];
+        $reply->SMTPAuth   = true;
+        $reply->Username   = $config['username'];
+        $reply->Password   = $config['password'];
+        $reply->SMTPSecure = ($config['encryption'] === 'ssl')
+            ? PHPMailer::ENCRYPTION_SMTPS
+            : PHPMailer::ENCRYPTION_STARTTLS;
+        $reply->Port       = (int) $config['port'];
+        $reply->CharSet    = 'UTF-8';
+
+        // From booking@, To submitter, CC booking@
+        $reply->setFrom('booking@rakelemenjivar.com', 'Rakele Menjivar');
+        $reply->addAddress($email, $name);
+        $reply->addCC('booking@rakelemenjivar.com', 'Rakele Menjivar');
+        $reply->addReplyTo('booking@rakelemenjivar.com', 'Rakele Menjivar');
+
+        $reply->Subject = 'Thank you for your message';
+        $reply->isHTML(false);
+        $reply->Body =
+            "Hi {$name},\n\n" .
+            "Thank you for the message. Rakele will get back to you shortly.\n\n" .
+            "Warm regards,\n" .
+            "Rakele Menjivar\n" .
+            "booking@rakelemenjivar.com";
+
+        $reply->send();
+    } catch (Exception $e) {
+        // Auto-reply failure should not break the main submission flow.
+        error_log('Auto-reply failed: ' . $e->getMessage());
+    }
+
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
 } catch (Exception $e) {
