@@ -59,6 +59,7 @@ const Portfolio = () => {
   const portfolioImages = [
     { src: portfolio1, alt: "Editorial Portrait", category: "Editorial" },
     { src: portfolio2, alt: "Lavender Fields", category: "Editorial" },
+    { src: portfolio14, alt: "Imperial Garden", category: "Couture" },
     { src: portfolio3, alt: "Polka Dot Romance", category: "Fashion" },
     { src: portfolio4, alt: "Window Light", category: "Editorial" },
     { src: portfolio5, alt: "Noir Hallway", category: "Fashion" },
@@ -70,7 +71,6 @@ const Portfolio = () => {
     { src: portfolio11, alt: "Riviera Drive", category: "Lifestyle" },
     { src: portfolio12, alt: "City Lights", category: "Fashion" },
     { src: portfolio13, alt: "Wild Waters", category: "Beauty" },
-    { src: portfolio14, alt: "Imperial Garden", category: "Couture" },
   ];
 
   const measurements = [
