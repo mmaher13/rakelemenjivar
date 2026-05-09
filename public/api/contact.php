@@ -217,15 +217,33 @@ try {
     $subject = "New Inquiry from {$name}" . ($company !== '' ? " - {$company}" : '');
     $mail->Subject = $subject;
 
-    $plain  = "New contact form submission from rakelemenjivar.com\n";
-    $plain .= "----------------------------------------\n";
-    $plain .= "FROM: {$name}\n";
-    $plain .= "EMAIL: {$email}\n";
-    $plain .= "COMPANY: " . ($company !== '' ? $company : 'Not provided') . "\n";
-    $plain .= "----------------------------------------\n\n";
-    $plain .= "MESSAGE:\n{$message}\n\n";
-    $plain .= "----------------------------------------\n";
-    $plain .= "Sent from the website contact form.";
+    // Shared metadata block (used in both emails)
+    $ipRaw = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $clientIp = trim(explode(',', $ipRaw)[0]);
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+    $referer = $_SERVER['HTTP_REFERER'] ?? 'direct';
+    $submittedAt = gmdate('Y-m-d H:i:s') . ' UTC';
+
+    $detailsBlock =
+        "----------------------------------------\n" .
+        "SUBMISSION DETAILS\n" .
+        "----------------------------------------\n" .
+        "NAME: {$name}\n" .
+        "EMAIL: {$email}\n" .
+        "COMPANY: " . ($company !== '' ? $company : 'Not provided') . "\n\n" .
+        "PROJECT DETAILS:\n" .
+        "{$message}\n\n" .
+        "----------------------------------------\n" .
+        "METADATA\n" .
+        "----------------------------------------\n" .
+        "SUBMITTED: {$submittedAt}\n" .
+        "IP ADDRESS: {$clientIp}\n" .
+        "USER AGENT: {$userAgent}\n" .
+        "REFERRER: {$referer}\n" .
+        "REQUEST ID: " . CONTACT_REQUEST_ID . "\n" .
+        "----------------------------------------";
+
+    $plain = "New contact form submission from rakelemenjivar.com\n\n" . $detailsBlock;
 
     $mail->isHTML(false);
     $mail->Body = $plain;
