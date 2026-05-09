@@ -242,7 +242,16 @@ try {
             "Thank you for the message. Rakele will get back to you shortly.\n\n" .
             "Warm regards,\n" .
             "Rakele Menjivar\n" .
-            "booking@rakelemenjivar.com";
+            "booking@rakelemenjivar.com\n\n" .
+            "----------------------------------------\n" .
+            "SUBMISSION DETAILS\n" .
+            "----------------------------------------\n" .
+            "NAME: {$name}\n" .
+            "EMAIL: {$email}\n" .
+            "COMPANY: " . ($company !== '' ? $company : 'Not provided') . "\n\n" .
+            "PROJECT DETAILS:\n" .
+            "{$message}\n" .
+            "----------------------------------------";
 
         clog('info', 'attempting auto-reply', ['to' => $email]);
         $reply->send();
