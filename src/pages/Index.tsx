@@ -43,7 +43,7 @@ const Index = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
           <div className="max-w-2xl">
             <p className="font-sans text-xs letter-spacing-wider text-primary mb-4 opacity-0 animate-fade-up">
-              INTERNATIONAL MODEL
+              MODEL &middot; ACTRESS &middot; SINGER
             </p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-light leading-tight mb-6 opacity-0 animate-fade-up delay-100">
               <span className="text-gradient">Rakele</span>
