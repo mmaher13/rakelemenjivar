@@ -43,7 +43,7 @@ const Index = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
           <div className="max-w-2xl">
             <p className="font-sans text-xs letter-spacing-wider text-primary mb-4 opacity-0 animate-fade-up">
-              INTERNATIONAL MODEL
+              MODEL &middot; ACTRESS &middot; SINGER
             </p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-light leading-tight mb-6 opacity-0 animate-fade-up delay-100">
               <span className="text-gradient">Rakele</span>
@@ -51,8 +51,8 @@ const Index = () => {
               <span className="text-foreground">Menjivar</span>
             </h1>
             <p className="font-sans text-sm md:text-base text-muted-foreground max-w-md mb-8 opacity-0 animate-fade-up delay-200 leading-relaxed">
-              Professional fashion model bringing elegance and versatility to every frame. Available for
-              editorial, commercial, runway, and brand collaborations worldwide.
+              Model, actress, and singer bringing elegance and versatility to every frame and every stage.
+              Available for editorial, commercial, runway, film, television, and music collaborations worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-up delay-300">
               <Button variant="hero" size="lg" asChild>
@@ -91,15 +91,17 @@ const Index = () => {
                 Where Passion Meets Profession
               </h2>
               <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                As a professional international fashion model, I bring years of
-                experience across diverse modeling categories. From high fashion
+                As a professional international model, actress, and singer, I bring years of
+                experience across diverse creative disciplines. From high fashion
                 editorials to commercial campaigns, luxury brand ambassadorships to runway shows,
-                my versatility and professionalism ensure every project exceeds expectations.
+                on-camera acting to live vocal performance, my versatility and professionalism
+                ensure every project exceeds expectations.
               </p>
               <p className="font-sans text-muted-foreground leading-relaxed mb-8">
                 I believe in collaborative artistry—working closely with
-                photographers, creative directors, and brands worldwide to bring unique
-                visions to life. Available for international bookings.
+                photographers, directors, creative teams, and brands worldwide to bring unique
+                visions to life on screen, on stage, and in front of the lens. Available for
+                international bookings.
               </p>
               <Button variant="elegant" asChild>
                 <Link to="/contact">Work With Me</Link>
