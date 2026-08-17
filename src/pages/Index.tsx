@@ -51,8 +51,8 @@ const Index = () => {
               <span className="text-foreground">Menjivar</span>
             </h1>
             <p className="font-sans text-sm md:text-base text-muted-foreground max-w-md mb-8 opacity-0 animate-fade-up delay-200 leading-relaxed">
-              Professional fashion model bringing elegance and versatility to every frame. Available for
-              editorial, commercial, runway, and brand collaborations worldwide.
+              Model, actress, and singer bringing elegance and versatility to every frame and every stage.
+              Available for editorial, commercial, runway, film, television, and music collaborations worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-up delay-300">
               <Button variant="hero" size="lg" asChild>
