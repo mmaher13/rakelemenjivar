@@ -91,15 +91,17 @@ const Index = () => {
                 Where Passion Meets Profession
               </h2>
               <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                As a professional international fashion model, I bring years of
-                experience across diverse modeling categories. From high fashion
+                As a professional international model, actress, and singer, I bring years of
+                experience across diverse creative disciplines. From high fashion
                 editorials to commercial campaigns, luxury brand ambassadorships to runway shows,
-                my versatility and professionalism ensure every project exceeds expectations.
+                on-camera acting to live vocal performance, my versatility and professionalism
+                ensure every project exceeds expectations.
               </p>
               <p className="font-sans text-muted-foreground leading-relaxed mb-8">
                 I believe in collaborative artistry—working closely with
-                photographers, creative directors, and brands worldwide to bring unique
-                visions to life. Available for international bookings.
+                photographers, directors, creative teams, and brands worldwide to bring unique
+                visions to life on screen, on stage, and in front of the lens. Available for
+                international bookings.
               </p>
               <Button variant="elegant" asChild>
                 <Link to="/contact">Work With Me</Link>
