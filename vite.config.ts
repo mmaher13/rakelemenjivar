@@ -10,6 +10,11 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  ssr: {
+    // Bundle CJS-only deps so the prerender step can import the SSR output as ESM.
+    noExternal: ["react-helmet-async"],
+  },
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
