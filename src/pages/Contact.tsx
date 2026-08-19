@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
+import Seo from "@/components/Seo";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,6 +77,18 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Contact & Bookings | Rakele Menjivar"
+        description="Book Rakele Menjivar for editorial, commercial, runway, film, television and music projects worldwide. Send a booking inquiry or email booking@rakelemenjivar.com."
+        path="/contact"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "Contact Rakele Menjivar",
+          url: "https://rakelemenjivar.com/contact",
+          about: { "@id": "https://rakelemenjivar.com/#person" },
+        }}
+      />
       <Navigation />
 
       <section className="pt-32 pb-24">

@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import Seo from "@/components/Seo";
 import Footer from "@/components/Footer";
 import portfolio1 from "@/assets/portfolio-1.jpg";
 import portfolio2 from "@/assets/portfolio-2.jpg";
@@ -86,6 +87,25 @@ const Portfolio = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Portfolio | Rakele Menjivar — Editorial, Couture & Red Carpet"
+        description="Selected editorial, couture, red carpet, beauty and lifestyle work by international model and actress Rakele Menjivar, with full measurements and stats."
+        path="/portfolio"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Rakele Menjivar Portfolio",
+          url: "https://rakelemenjivar.com/portfolio",
+          about: { "@id": "https://rakelemenjivar.com/#person" },
+          breadcrumb: {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://rakelemenjivar.com/" },
+              { "@type": "ListItem", position: 2, name: "Portfolio", item: "https://rakelemenjivar.com/portfolio" },
+            ],
+          },
+        }}
+      />
       <Navigation />
 
       {/* Hero */}

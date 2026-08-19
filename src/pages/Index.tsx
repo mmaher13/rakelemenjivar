@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import Seo from "@/components/Seo";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -19,6 +20,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Rakele Menjivar | International Model, Actress & Singer"
+        description="Rakele Menjivar is a professional international model, actress and singer available worldwide for editorial, commercial, runway, film, television and music work."
+        path="/"
+      />
       <Navigation />
 
       {/* Hero Section */}
