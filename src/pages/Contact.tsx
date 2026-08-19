@@ -32,17 +32,25 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contact.php', {
+      const body = new FormData();
+      body.append("name", formData.name);
+      body.append("email", formData.email);
+      body.append("company", formData.company);
+      body.append("message", formData.message);
+      body.append("website", formData.website); // honeypot
+
+      const response = await fetch('/contacto.php', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          Accept: 'application/json',
         },
-        body: JSON.stringify(formData),
+        body,
       });
 
       const result = await response.json();
 
-      if (result.success) {
+      if (result.ok) {
         toast({
           title: "Message Sent",
           description: "Thank you! I'll get back to you soon.",
