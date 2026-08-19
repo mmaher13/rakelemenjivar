@@ -11,29 +11,37 @@ import { usePageTracking } from "./hooks/usePageTracking";
 
 const queryClient = new QueryClient();
 
+export const RouteTable = () => (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/portfolio" element={<Portfolio />} />
+    <Route path="/contact" element={<Contact />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
+
 const AppRoutes = () => {
   usePageTracking();
-  
-  return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/portfolio" element={<Portfolio />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+
+  return <RouteTable />;
 };
 
-const App = () => (
+export const AppShell = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      {children}
     </TooltipProvider>
   </QueryClientProvider>
+);
+
+const App = () => (
+  <AppShell>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  </AppShell>
 );
 
 export default App;
