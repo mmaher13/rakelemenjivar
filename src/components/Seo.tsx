@@ -14,7 +14,7 @@ const Seo = ({ title, description, path, noindex, jsonLd }: SeoProps) => {
   const url = `${SITE}${path}`;
 
   return (
-    <Helmet prioritizeSeoTags>
+    <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
