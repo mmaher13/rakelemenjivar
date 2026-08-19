@@ -74,7 +74,7 @@ const Portfolio = () => {
   ];
 
   const measurements = [
-    { label: "Height", value: "1.70 m" },
+    { label: "Height", value: "1.72 m" },
     { label: "Bust", value: "90 cm (32A)" },
     { label: "Waist", value: "60 cm" },
     { label: "Hips", value: "92 cm" },
