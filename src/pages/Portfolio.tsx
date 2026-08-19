@@ -1,18 +1,14 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import portfolio1 from "@/assets/portfolio-1.jpg";
-import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
 import portfolio4 from "@/assets/portfolio-4.jpg";
 import portfolio5 from "@/assets/portfolio-5.jpg";
-import portfolio6 from "@/assets/portfolio-6.jpg";
-import portfolio7 from "@/assets/portfolio-7.jpg";
 import portfolio8 from "@/assets/portfolio-8.jpg";
 import portfolio9 from "@/assets/portfolio-9.jpg";
 import portfolio10 from "@/assets/portfolio-10.jpg";
 import portfolio11 from "@/assets/portfolio-11.jpg";
 import portfolio12 from "@/assets/portfolio-12.jpg";
-import portfolio13 from "@/assets/portfolio-13.jpg";
 import portfolio14 from "@/assets/portfolio-14.jpg";
 import { useParallax } from "@/hooks/useParallax";
 
@@ -58,19 +54,15 @@ const Portfolio = () => {
 
   const portfolioImages = [
     { src: portfolio1, alt: "Editorial Portrait", category: "Editorial" },
-    { src: portfolio2, alt: "Lavender Fields", category: "Editorial" },
     { src: portfolio14, alt: "Imperial Garden", category: "Couture" },
     { src: portfolio3, alt: "Polka Dot Romance", category: "Fashion" },
     { src: portfolio4, alt: "Window Light", category: "Editorial" },
     { src: portfolio5, alt: "Noir Hallway", category: "Fashion" },
-    { src: portfolio6, alt: "Golden Hour", category: "Beauty" },
-    { src: portfolio7, alt: "Parisian Streets", category: "Lifestyle" },
     { src: portfolio8, alt: "Black Glimmer", category: "Couture" },
     { src: portfolio9, alt: "Crimson Brocade", category: "Editorial" },
     { src: portfolio10, alt: "Modern Elegance", category: "Editorial" },
     { src: portfolio11, alt: "Riviera Drive", category: "Lifestyle" },
     { src: portfolio12, alt: "City Lights", category: "Fashion" },
-    { src: portfolio13, alt: "Wild Waters", category: "Beauty" },
   ];
 
   const measurements = [
