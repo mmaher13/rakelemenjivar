@@ -1,73 +1,68 @@
 #!/usr/bin/env bash
 # ============================================================
-# Update deploy — pulls latest code from GitHub and rebuilds.
-# Run this ON THE SERVER from the repo root:
-#     cd /var/www/rakelemenjivar.com
-#     bash scripts/deploy.sh
+# Deploy — pulls latest code from GitHub, rebuilds, restores the
+# PHP mail endpoint + PHPMailer into dist/, fixes permissions.
 #
-# Assumes one-time setup is already done (Apache vhost,
-# .env.mail in place, PHPMailer installed in public/api/vendor).
+# Run ON THE SERVER:
+#     sudo bash /var/www/rakelemenjivar.com/scripts/deploy.sh
 # ============================================================
 set -euo pipefail
 
-REPO_DIR="/var/www/rakelemenjivar.com"
-cd "${REPO_DIR}"
+PROJECT_DIR="/var/www/rakelemenjivar.com"
+DIST_DIR="$PROJECT_DIR/dist"
+WEB_USER="www-data"
 
-echo "==> 0/5  Ensuring persistent log dir exists"
-# Created early so it survives even if a later step fails.
-sudo mkdir -p "${REPO_DIR}/logs"
-sudo touch "${REPO_DIR}/logs/contact.log"
-sudo chown -R www-data:www-data "${REPO_DIR}/logs"
-sudo chmod 755 "${REPO_DIR}/logs"
-sudo chmod 644 "${REPO_DIR}/logs/contact.log"
+[ "$EUID" -eq 0 ] || { echo "Run with sudo."; exit 1; }
+cd "$PROJECT_DIR"
 
-echo "==> 1/5  Pulling latest from GitHub"
-# .env.mail is tracked in the repo (source of truth). Discard any
-# in-place edits on the server so the pull can fast-forward cleanly.
+# .env.mail is tracked in the repo (source of truth). Discard local edits so the pull is clean.
 git checkout -- .env.mail 2>/dev/null || true
-git pull --ff-only
+git fetch origin main
+git reset --hard origin/main
 
-echo "==> 2/5  Installing npm dependencies"
-npm install
-
-echo "==> 3/5  Building production bundle"
+[ -f package-lock.json ] && npm ci || npm install
 npm run build
+[ -d "$DIST_DIR" ] || { echo "Build produced no dist/."; exit 1; }
 
-echo "==> 4/5  Staging PHP API + .htaccess into dist/"
-mkdir -p dist/api
-# Copy contact.php (and any other API files) but DO NOT overwrite vendor/
-rsync -a --exclude 'vendor/' --exclude 'composer.*' public/api/ dist/api/
-# Symlink vendor/ so PHPMailer is available without copying it every build
-if [ ! -e dist/api/vendor ]; then
-  ln -s "${REPO_DIR}/public/api/vendor" dist/api/vendor
+# Serve the PHP endpoint from both possible DocumentRoots.
+cp "$PROJECT_DIR/public/contacto.php" "$DIST_DIR/contacto.php"
+cp "$PROJECT_DIR/public/contacto.php" "$PROJECT_DIR/contacto.php"
+
+# Guard: abort if GitHub didn't actually have the latest code.
+for target in "$DIST_DIR/contacto.php" "$PROJECT_DIR/contacto.php"; do
+  grep -q "contact_debug_log"   "$target" || { echo "$target is stale."; exit 1; }
+  grep -q "contact_storage_dir" "$target" || { echo "$target is stale."; exit 1; }
+done
+echo "Deployed: $(git rev-parse --short HEAD) — $(git log -1 --pretty=%s)"
+
+# PHPMailer + helpers into dist/lib/
+mkdir -p "$DIST_DIR/lib"
+if [ -d "$PROJECT_DIR/lib/PHPMailer/src" ]; then
+  mkdir -p "$DIST_DIR/lib/PHPMailer"
+  cp -r "$PROJECT_DIR/lib/PHPMailer/src" "$DIST_DIR/lib/PHPMailer/"
+else
+  echo "[!] PHPMailer missing — emails disabled."
 fi
+cp "$PROJECT_DIR/public/lib/load_env.php"   "$DIST_DIR/lib/load_env.php"
+cp "$PROJECT_DIR/public/lib/append_csv.php" "$DIST_DIR/lib/append_csv.php"
 
-# Create .htaccess if missing
-if [ ! -f dist/.htaccess ]; then
-  cat > dist/.htaccess <<'HTACCESS'
-RewriteEngine On
-RewriteBase /
+# Permissions
+chown -R "$WEB_USER:$WEB_USER" "$DIST_DIR"
+find "$DIST_DIR" -type d -exec chmod 755 {} \;
+find "$DIST_DIR" -type f -exec chmod 644 {} \;
+[ -f "$PROJECT_DIR/.env.mail" ] && chown "$WEB_USER:$WEB_USER" "$PROJECT_DIR/.env.mail" && chmod 600 "$PROJECT_DIR/.env.mail"
+[ -d "$PROJECT_DIR/lib" ] && chown -R "$WEB_USER:$WEB_USER" "$PROJECT_DIR/lib"
 
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
+# Data files must exist and be writable by Apache.
+touch "$PROJECT_DIR/contactos.csv" "$PROJECT_DIR/contact.log"
+chown "$WEB_USER:$WEB_USER" "$PROJECT_DIR/contactos.csv" "$PROJECT_DIR/contact.log"
+chmod 640 "$PROJECT_DIR/contactos.csv"
+chmod 666 "$PROJECT_DIR/contact.log"
 
-RewriteRule ^api/ - [L]
-RewriteRule ^ index.html [L]
+# Clear OPcache — otherwise Apache keeps serving the OLD contacto.php.
+while read -r unit _; do
+  [ -n "$unit" ] && systemctl restart "$unit"
+done < <(systemctl list-units --type=service --state=active 'php*-fpm.service' --no-legend --no-pager 2>/dev/null || true)
+systemctl is-active --quiet apache2 && systemctl restart apache2
 
-<FilesMatch "^(\.env.*|composer\.(json|lock))$">
-  Require all denied
-</FilesMatch>
-HTACCESS
-fi
-
-echo "==> 5/5  Fixing permissions and reloading Apache"
-sudo chown -R www-data:www-data "${REPO_DIR}/dist"
-sudo chown -R www-data:www-data "${REPO_DIR}/public/api/vendor" 2>/dev/null || true
-sudo chown www-data:www-data "${REPO_DIR}/.env.mail" 2>/dev/null || true
-sudo chmod 600 "${REPO_DIR}/.env.mail" 2>/dev/null || true
-sudo systemctl reload apache2
-
-echo
 echo "✅ Deploy complete — https://rakelemenjivar.com"
-echo "   Tail contact log:  sudo tail -f ${REPO_DIR}/logs/contact.log"
